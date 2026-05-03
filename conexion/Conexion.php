@@ -1,7 +1,7 @@
 <?php
 class Conexion {
     private $host = "localhost";
-    private $db   = "dbsistema";
+    private $db   = "crudsistema";
     private $user = "root";
     private $pass = "";
     public  $conn;

@@ -1,371 +1,142 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>CRUD Productos</title>
+<meta charset="UTF-8">
+<title>Productos</title>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:sans-serif;background:#f1f5f9;margin:0;padding:20px}
 
-body{
-  font-family:'Segoe UI',Arial;
-  background:#f1f5f9;
-  display:flex;
-  min-height:100vh;
-  font-size:14px;
-  color:#0f172a;
-}
+h1{margin-bottom:10px}
 
-/* SIDEBAR */
-.sidebar{
-  width:220px;
-  background:linear-gradient(180deg,#16a34a,#15803d);
-  color:#fff;
-  position:fixed;
-  height:100vh;
-  box-shadow:2px 0 10px rgba(0,0,0,.08);
-}
+.top{display:flex;justify-content:space-between;margin-bottom:10px}
+input,select{padding:8px;border-radius:8px;border:1px solid #ccc}
+button{padding:8px 12px;border:none;border-radius:8px;cursor:pointer}
 
-.sidebar-brand{
-  padding:22px 18px;
-  border-bottom:1px solid rgba(255,255,255,.15);
-}
-.sidebar-brand h1{
-  font-size:16px;
-  font-weight:600;
-}
+.primary{background:#6366f1;color:#fff}
+.card{background:#fff;padding:15px;border-radius:12px}
 
-.nav-item{
-  padding:12px 18px;
-  color:#dcfce7;
-  border:none;
-  width:100%;
-  text-align:left;
-  cursor:pointer;
-}
-.nav-item.active{
-  background:#fff;
-  color:#16a34a;
-  font-weight:600;
-  border-radius:0 20px 20px 0;
-}
+table{width:100%;border-collapse:collapse}
+th,td{padding:10px;text-align:left}
+tr{border-top:1px solid #eee}
 
-/* MAIN */
-.main{
-  margin-left:220px;
-  flex:1;
-}
+.badge{padding:3px 8px;border-radius:12px;font-size:12px}
+.activo{background:#dcfce7;color:#16a34a}
+.inactivo{background:#eee}
 
-/* TOPBAR */
-.topbar{
-  height:60px;
-  background:#fff;
-  border-bottom:1px solid #e2e8f0;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 28px;
-}
-
-.btn-add{
-  background:#2563eb;
-  color:#fff;
-  border:none;
-  padding:8px 16px;
-  border-radius:8px;
-  cursor:pointer;
-}
-.btn-add:hover{
-  background:#1d4ed8;
-}
-
-/* CONTENT */
-.content{
-  padding:30px;
-}
-
-/* CARD */
-.table-card{
-  background:#fff;
-  border-radius:12px;
-  box-shadow:0 6px 18px rgba(0,0,0,.05);
-  overflow:hidden;
-}
-
-.table-card-header{
-  padding:16px 20px;
-  border-bottom:1px solid #e2e8f0;
-  display:flex;
-  justify-content:space-between;
-}
-
-/* TABLE */
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-
-thead{
-  background:#f8fafc;
-}
-
-thead th{
-  padding:12px 20px;
-  font-size:11px;
-  text-transform:uppercase;
-  color:#64748b;
-}
-
-tbody tr{
-  border-bottom:1px solid #f1f5f9;
-}
-tbody tr:hover{
-  background:#f9fafb;
-}
-tbody td{
-  padding:14px 20px;
-}
-
-/* ESTADO */
-.estado-1{color:#16a34a;font-weight:600;}
-.estado-0{color:#94a3b8;}
-
-/* BOTONES */
-button{
-  border:none;
-  padding:5px 10px;
-  border-radius:6px;
-  cursor:pointer;
-}
-
-button:nth-child(1){
-  background:#e0f2fe;
-  color:#0369a1;
-}
-button:nth-child(2){
-  background:#fee2e2;
-  color:#b91c1c;
-}
-
-/* MODAL */
-.overlay{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.4);
-  justify-content:center;
-  align-items:center;
-}
-.overlay.open{
-  display:flex;
-}
-
-.modal{
-  background:#fff;
-  border-radius:12px;
-  width:400px;
-  box-shadow:0 15px 40px rgba(0,0,0,.2);
-}
-
-.modal-body{
-  padding:22px;
-}
-.modal-body input,
-.modal-body select{
-  width:100%;
-  margin-bottom:12px;
-  padding:10px;
-  border-radius:6px;
-  border:1px solid #e2e8f0;
-}
-
-.modal-footer{
-  padding:14px;
-  display:flex;
-  justify-content:flex-end;
-  gap:10px;
-}
-
-.modal-footer button:first-child{
-  background:#e5e7eb;
-}
-.modal-footer button:last-child{
-  background:#16a34a;
-  color:#fff;
-}
+.modal{position:fixed;inset:0;background:#0005;display:none;align-items:center;justify-content:center}
+.modal.show{display:flex}
+.box{background:#fff;padding:20px;border-radius:12px;width:300px}
 </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
-<aside class="sidebar">
-  <div class="sidebar-brand">
-    <h1>CRUD PRODUCTOS</h1>
-  </div>
-  <button class="nav-item active">📦 Productos</button>
-</aside>
+<h1>📦 Productos</h1>
 
-<!-- MAIN -->
-<div class="main">
-<header class="topbar">
-  <span>Módulos / Productos</span>
-  <button class="btn-add" onclick="abrirModalNuevo()">+ Agregar</button>
-</header>
-
-<div class="content">
-<div class="table-card">
-<div class="table-card-header">
-  <h2>Lista de Productos</h2>
-  <span id="count-productos">0 registros</span>
+<div class="top">
+  <input id="buscar" placeholder="Buscar...">
+  <button class="primary" onclick="nuevo()">+ Nuevo</button>
 </div>
 
+<div class="card">
 <table>
 <thead>
-<tr>
-<th>#</th>
-<th>Nombre</th>
-<th>Precio</th>
-<th>Estado</th>
-<th>Acciones</th>
-</tr>
+<tr><th>#</th><th>Nombre</th><th>Precio</th><th>Estado</th><th></th></tr>
 </thead>
-
-<tbody id="tbody-productos">
-<tr><td colspan="5">Cargando...</td></tr>
-</tbody>
+<tbody id="tb"></tbody>
 </table>
-</div>
-</div>
 </div>
 
 <!-- MODAL -->
-<div class="overlay" id="modal-producto">
-<div class="modal">
+<div class="modal" id="modal">
+<div class="box">
 
-<div class="modal-body">
-<input type="hidden" id="mp-id">
+<input type="hidden" id="id">
+<input placeholder="Nombre" id="nombre"><br><br>
+<input type="number" placeholder="Precio" id="precio"><br><br>
 
-<input type="text" id="mp-nombre" placeholder="Nombre del producto">
-<input type="number" id="mp-precio" placeholder="Precio">
-
-<select id="mp-estado">
+<select id="estado">
 <option value="1">Activo</option>
 <option value="0">Inactivo</option>
-</select>
-</div>
+</select><br><br>
 
-<div class="modal-footer">
-<button onclick="cerrarModal()">Cancelar</button>
-<button onclick="guardarProducto()">Guardar</button>
-</div>
+<button onclick="guardar()" class="primary">Guardar</button>
+<button onclick="cerrar()">Cancelar</button>
 
 </div>
 </div>
 
 <script>
-const CTRL_P = '../controladores/ProductoController.php';
+const URL='../controladores/ProductoController.php';
+let data=[];
 
-async function listarProductos(){
-  try{
-    const res = await fetch(`${CTRL_P}?op=listar`);
-    const data = await res.json();
+const $=id=>document.getElementById(id);
 
-    document.getElementById('count-productos').textContent = data.length+" registros";
-
-    document.getElementById('tbody-productos').innerHTML =
-      data.length ? data.map(p=>`
-        <tr>
-          <td>${p.id}</td>
-          <td>${p.nombre}</td>
-          <td>S/ ${parseFloat(p.precio).toFixed(2)}</td>
-          <td class="estado-${p.estado}">
-            ${p.estado==1?'Activo':'Inactivo'}
-          </td>
-          <td>
-            <button onclick="editarProducto(${p.id})">Editar</button>
-            <button onclick="eliminarProducto(${p.id})">Eliminar</button>
-          </td>
-        </tr>
-      `).join('')
-      : `<tr><td colspan="5">Sin registros</td></tr>`;
-
-  }catch(e){
-    document.getElementById('tbody-productos').innerHTML =
-      `<tr><td colspan="5">Error de conexión</td></tr>`;
-  }
+async function listar(){
+  data=await (await fetch(URL+'?op=listar')).json();
+  pintar(data);
 }
 
-function abrirModalNuevo(){
-  document.getElementById('mp-id').value='';
-  document.getElementById('mp-nombre').value='';
-  document.getElementById('mp-precio').value='';
-  document.getElementById('mp-estado').value='1';
-  abrirModal();
+function pintar(arr){
+  $('tb').innerHTML=arr.map(p=>`
+  <tr>
+    <td>${p.id}</td>
+    <td>${p.nombre}</td>
+    <td>S/ ${p.precio}</td>
+    <td><span class="badge ${p.estado==1?'activo':'inactivo'}">
+      ${p.estado==1?'Activo':'Inactivo'}
+    </span></td>
+    <td>
+      <button onclick="edit(${p.id})">✏️</button>
+      <button onclick="del(${p.id})">🗑️</button>
+    </td>
+  </tr>`).join('');
 }
 
-function abrirModal(){
-  document.getElementById('modal-producto').classList.add('open');
+$('buscar').oninput=e=>{
+  pintar(data.filter(p=>p.nombre.toLowerCase().includes(e.target.value.toLowerCase())));
 }
 
-function cerrarModal(){
-  document.getElementById('modal-producto').classList.remove('open');
+function nuevo(){
+  $('id').value='';
+  $('nombre').value='';
+  $('precio').value='';
+  $('estado').value='1';
+  abrir();
 }
 
-async function editarProducto(id){
-  const res = await fetch(`${CTRL_P}?op=obtener&id=${id}`);
-  const p = await res.json();
+function abrir(){ $('modal').classList.add('show') }
+function cerrar(){ $('modal').classList.remove('show') }
 
-  document.getElementById('mp-id').value=p.id;
-  document.getElementById('mp-nombre').value=p.nombre;
-  document.getElementById('mp-precio').value=p.precio;
-  document.getElementById('mp-estado').value=p.estado;
-
-  abrirModal();
+async function edit(id){
+  let p=await (await fetch(URL+`?op=obtener&id=${id}`)).json();
+  $('id').value=p.id;
+  $('nombre').value=p.nombre;
+  $('precio').value=p.precio;
+  $('estado').value=p.estado;
+  abrir();
 }
 
-async function guardarProducto(){
-  const id = document.getElementById('mp-id').value;
-  const nombre = document.getElementById('mp-nombre').value;
-  const precio = document.getElementById('mp-precio').value;
-  const estado = document.getElementById('mp-estado').value;
+async function guardar(){
+  let f=new FormData();
+  f.append('id',$('id').value);
+  f.append('nombre',$('nombre').value);
+  f.append('precio',$('precio').value);
+  f.append('estado',$('estado').value);
 
-  if(!nombre || !precio){
-    alert("Completa los campos");
-    return;
-  }
-
-  const fd = new FormData();
-  fd.append('id',id);
-  fd.append('nombre',nombre);
-  fd.append('precio',precio);
-  fd.append('estado',estado);
-
-  await fetch(`${CTRL_P}?op=guardar`,{
-    method:'POST',
-    body:fd
-  });
-
-  cerrarModal();
-  listarProductos();
+  await fetch(URL+'?op=guardar',{method:'POST',body:f});
+  cerrar(); listar();
 }
 
-async function eliminarProducto(id){
-  if(!confirm("¿Eliminar producto?")) return;
-
-  const fd = new FormData();
-  fd.append('id',id);
-
-  await fetch(`${CTRL_P}?op=eliminar`,{
-    method:'POST',
-    body:fd
-  });
-
-  listarProductos();
+async function del(id){
+  if(!confirm('Eliminar?'))return;
+  let f=new FormData(); f.append('id',id);
+  await fetch(URL+'?op=eliminar',{method:'POST',body:f});
+  listar();
 }
 
-listarProductos();
+listar();
 </script>
 
 </body>
